@@ -1,0 +1,68 @@
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/apica-icon.png</param>
+        <param name="plugin-logo">images/apica-logo.png</param>
+    </plugin-info>
+    
+    <taskType key="loadtestTask" name="Apica Loadtest" class="com.apica.LoadtestRunnerTask">
+        <description>This task executes an Apica loadtest</description>
+        <category name="test"/>
+        <configuration class="com.apica.LoadtestRunnerConfiguration" />
+        <resource type="freemarker" name="edit" location="editLoadtestRunnerTask.ftl"/>
+        <resource type="freemarker" name="view" location="viewLoadtestRunnerTask.ftl"/>  
+        <resource type="download" name="icon" location="images/apicaloadtest.png"/>
+    </taskType>
+    
+    
+    <!--build info-->
+    <xwork key="buildInfoAction" name="Loadtest results">
+        <package name="apicaLoadtestPlugin" extends="buildView">
+            <action name="buildInfoAction" class="com.apica.loadtest.reports.BuildInfoAction">
+                <result name="input" type="freemarker">buildInfoAction.ftl</result>
+                <result name="error" type="freemarker">buildInfoAction.ftl</result>
+            </action>
+        </package>
+    </xwork>
+
+    <web-item key="buildInfoAction:${buildKey}-${buildNumber}"
+              name="View Apica Loadtest Summary" section="chainResults.subMenu/chainResults" weight="20">
+        <label key="Apica Loadtest Info"/>
+        <link linkId="buildInfoAction:${buildKey}-${buildNumber}">/build/buildInfoAction.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+    </web-item>
+    
+    <!--
+    <xwork key="loadtestReports" name="View Loadtest Reports">
+        <package name="apicaLoadtestReportView" extends="buildResultView">
+            <action name="viewLoadtestReport"	class="com.apica.loadtest.reports.ViewLoadtestReport">
+                <result name="success" type="freemarker">viewLoadtestReport.ftl</result>
+            </action>
+        </package>        
+    </xwork>
+	
+    
+    <web-item name="LoadtestReportPage" i18n-name-key="loadtestJobReport.label"
+                  key="loadtestJobReport" section="chainResults.subMenu/chainResults"
+                  weight="80">
+        <description key="loadtestJobReport.description">Display the Apica Loadtest Report page</description>
+        <label key="loadtestJobReport.label" />
+        <link linkId="loadtestJobReport">/build/result/viewLoadtestReport.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+    </web-item> -->
+
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="ApicaLoadtest"/>
+    
+    <!-- add our web resources -->
+    <web-resource key="ApicaLoadtest-resources" name="ApicaLoadtest Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        
+        <resource type="download" name="ApicaLoadtest.css" location="/css/ApicaLoadtest.css"/>
+        <resource type="download" name="ApicaLoadtest.js" location="/js/ApicaLoadtest.js"/>
+        <resource type="download" name="images/" location="/images"/>
+
+        <context>ApicaLoadtest</context>
+    </web-resource>
+    
+</atlassian-plugin>
