@@ -7,10 +7,10 @@
         <param name="plugin-logo">images/apica-logo.png</param>
     </plugin-info>
     
-    <taskType key="loadtestTask" name="Apica Loadtest" class="com.apica.LoadtestRunnerTask">
+    <taskType key="loadtestTask" name="Apica Loadtest" class="com.apica.loadtest.execution.LoadtestRunnerTask">
         <description>This task executes an Apica loadtest</description>
         <category name="test"/>
-        <configuration class="com.apica.LoadtestRunnerConfiguration" />
+        <configuration class="com.apica.LoadtestRunnerConfigurator" />
         <resource type="freemarker" name="edit" location="editLoadtestRunnerTask.ftl"/>
         <resource type="freemarker" name="view" location="viewLoadtestRunnerTask.ftl"/>  
         <resource type="download" name="icon" location="images/apicaloadtest.png"/>
@@ -18,39 +18,22 @@
     
     
     <!--build info-->
-    <xwork key="buildInfoAction" name="Loadtest results">
+    <xwork key="ApicaReports" name="Loadtest results">
         <package name="apicaLoadtestPlugin" extends="buildView">
-            <action name="buildInfoAction" class="com.apica.loadtest.reports.BuildInfoAction">
-                <result name="input" type="freemarker">buildInfoAction.ftl</result>
-                <result name="error" type="freemarker">buildInfoAction.ftl</result>
+            <action name="buildLoadtestSummary" class="com.apica.loadtest.reports.BuildLoadtestSummary">
+                <result name="input" type="freemarker">/reports/buildLoadtestReport.ftl</result>
+                <result name="error" type="freemarker">/reports/buildLoadtestReport.ftl</result>
+                <result name="success" type="freemarker">/reports/buildLoadtestReport.ftl</result>
             </action>
         </package>
     </xwork>
 
-    <web-item key="buildInfoAction:${buildKey}-${buildNumber}"
+    <web-item key="buildLoadtestSummary:${buildKey}-${buildNumber}"
               name="View Apica Loadtest Summary" section="chainResults.subMenu/chainResults" weight="20">
-        <label key="Apica Loadtest Info"/>
-        <link linkId="buildInfoAction:${buildKey}-${buildNumber}">/build/buildInfoAction.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+        <label key="Apica Loadtest Summary"/>
+        <link linkId="buildLoadtestSummary:${buildKey}-${buildNumber}">/build/result/buildLoadtestSummary.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
     </web-item>
     
-    <!--
-    <xwork key="loadtestReports" name="View Loadtest Reports">
-        <package name="apicaLoadtestReportView" extends="buildResultView">
-            <action name="viewLoadtestReport"	class="com.apica.loadtest.reports.ViewLoadtestReport">
-                <result name="success" type="freemarker">viewLoadtestReport.ftl</result>
-            </action>
-        </package>        
-    </xwork>
-	
-    
-    <web-item name="LoadtestReportPage" i18n-name-key="loadtestJobReport.label"
-                  key="loadtestJobReport" section="chainResults.subMenu/chainResults"
-                  weight="80">
-        <description key="loadtestJobReport.description">Display the Apica Loadtest Report page</description>
-        <label key="loadtestJobReport.label" />
-        <link linkId="loadtestJobReport">/build/result/viewLoadtestReport.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
-    </web-item> -->
-
     <!-- add our i18n resource -->
     <resource type="i18n" name="i18n" location="ApicaLoadtest"/>
     
@@ -64,5 +47,12 @@
 
         <context>ApicaLoadtest</context>
     </web-resource>
+    
+    <resource type="download" name="apica-loadtest-logo.png" location="images/apica-loadtest-logo.png"/>
+    <resource type="download" name="ApicaLoadtest.css" location="css/ApicaLoadtest.css"/>
+    
+    <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
+    <component-import key="taskContextHelper" interface="com.atlassian.bamboo.task.TaskContextHelperService"/>
+    <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
     
 </atlassian-plugin>

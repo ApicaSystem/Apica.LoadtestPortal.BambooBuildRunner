@@ -21,25 +21,30 @@ import com.atlassian.util.concurrent.Nullable;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import com.atlassian.bamboo.task.BuildTaskRequirementSupport;
+import com.atlassian.bamboo.task.TaskContextHelperService;
+import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.sal.api.ApplicationProperties;
+import com.atlassian.sal.api.UrlMode;
 
 /**
  *
  * @author andras.nemes
  */
-public class LoadtestRunnerConfiguration extends AbstractTaskConfigurator implements BuildTaskRequirementSupport
+public class LoadtestRunnerConfigurator extends AbstractTaskConfigurator implements BuildTaskRequirementSupport
 {
 
     private final String apiTokenKey = StringConstants.API_TOKEN_KEY;
     private final String presetKey = StringConstants.PRESET_KEY;
     private final String scenarioFileKey = StringConstants.SCENARIO_FILE_NAME_KEY;
     private final JobParameterValidationService parameterValidationService;
+    private ApplicationProperties applicationProperties;
 
-    public LoadtestRunnerConfiguration()
+    public LoadtestRunnerConfigurator()
     {
         this(new LoadtestJobParameterValidationService(new LtpWebApiHostnameVerifier(), new LtpWebApiTrustManager()));
     }
 
-    public LoadtestRunnerConfiguration(JobParameterValidationService parameterValidationService)
+    public LoadtestRunnerConfigurator(JobParameterValidationService parameterValidationService)
     {
         this.parameterValidationService = parameterValidationService;
     }
@@ -51,6 +56,7 @@ public class LoadtestRunnerConfiguration extends AbstractTaskConfigurator implem
         config.put(apiTokenKey, params.getString(apiTokenKey));
         config.put(presetKey, params.getString(presetKey));
         config.put(scenarioFileKey, params.getString(scenarioFileKey));
+        config.put("baseUrl", this.applicationProperties.getBaseUrl(UrlMode.ABSOLUTE));        
         return config;
     }
 
@@ -136,4 +142,9 @@ public class LoadtestRunnerConfiguration extends AbstractTaskConfigurator implem
         context.put(scenarioFileKey, taskDefinition.getConfiguration().get(scenarioFileKey));
     }
 
+    // -------------------------------------------------------------------------------------- Basic Accessors / Mutators
+    public void setApplicationProperties(ApplicationProperties applicationProperties)
+    {
+        this.applicationProperties  =applicationProperties;
+    }
 }

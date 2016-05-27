@@ -3,19 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.apica;
+package com.apica.loadtest.execution;
 
 import com.apica.constants.StringConstants;
-import com.apica.loadtest.execution.JobExecutorService;
-import com.apica.loadtest.execution.JobStatusRequest;
-import com.apica.loadtest.execution.JobStatusResponse;
-import com.apica.loadtest.execution.LoadtestJobSummaryRequest;
-import com.apica.loadtest.execution.LoadtestJobSummaryResponse;
-import com.apica.loadtest.execution.LtpApiLoadtestJobExecutorService;
-import com.apica.loadtest.execution.PerformanceSummary;
-import com.apica.loadtest.execution.RunLoadtestJobResult;
-import com.apica.loadtest.execution.StartJobByPresetResponse;
-import com.apica.loadtest.execution.TransmitJobRequestArgs;
 import com.apica.loadtest.thresholds.Threshold;
 import com.apica.loadtest.thresholds.ThresholdEvaluationResult;
 import com.apica.loadtest.validation.JobParameterValidationService;
@@ -31,8 +21,6 @@ import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.util.concurrent.NotNull;
-import java.io.PrintStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -63,13 +51,16 @@ public class LoadtestRunnerTask implements TaskType
     @Override
     public TaskResult execute(final TaskContext taskContext) throws TaskException
     {
+        final BuildLogger buildLogger = taskContext.getBuildLogger();
+
+        taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("baseUrl", taskContext.getConfigurationMap().get("baseUrl"));
+
         List<Threshold> thresholds = new ArrayList<Threshold>();
         //code omitted for the time being, need to collect thresholds later
         final String apiToken = taskContext.getConfigurationMap().get(StringConstants.API_TOKEN_KEY);
         final String scenarioFile = taskContext.getConfigurationMap().get(StringConstants.SCENARIO_FILE_NAME_KEY);
         final String preset = taskContext.getConfigurationMap().get(StringConstants.PRESET_KEY);
 
-        final BuildLogger buildLogger = taskContext.getBuildLogger();
         buildLogger.addBuildLogEntry("Apica Loadtest starting...");
         buildLogger.addBuildLogEntry("Validating job parameters...");
         buildLogger.addBuildLogEntry("Testing preset name: ".concat(preset));
@@ -146,21 +137,29 @@ public class LoadtestRunnerTask implements TaskType
             PerformanceSummary performanceSummary = runLoadtestJob.getPerformanceSummary();
             if (performanceSummary != null)
             {
+
                 //build.addAction(new LoadTestSummary(build, performanceSummary, loadtestBuilderModel.getPresetName()));
             }
             if (res)
             {
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("finished", "true");
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("hasResults", "true");
                 return TaskResultBuilder.newBuilder(taskContext).success().build();
             } else
             {
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("finished", "true");
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("hasResults", "false");
                 return TaskResultBuilder.newBuilder(taskContext).failed().build();
             }
         }
+        taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("finished", "true");
+        taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("hasResults", "false");
         return TaskResultBuilder.newBuilder(taskContext).failed().build();
+
     }
-    
+
     private RunLoadtestJobResult runLoadtestJob(BuildLogger buildLogger, List<Threshold> thresholds, String loadtestPresetName,
-        String loadtestFileName, String authToken)
+            String loadtestFileName, String authToken)
     {
         RunLoadtestJobResult res = new RunLoadtestJobResult();
         boolean success = true;
@@ -229,8 +228,7 @@ public class LoadtestRunnerTask implements TaskType
                 buildLogger.addBuildLogEntry(startByPresetResponse.getException());
                 success = false;
             }
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             buildLogger.addBuildLogEntry(ex.getMessage());
             success = false;
@@ -238,7 +236,7 @@ public class LoadtestRunnerTask implements TaskType
         res.setSuccess(success);
         return res;
     }
-    
+
     private void logJobStatus(JobStatusResponse jobStatusResponse, BuildLogger buildLogger)
     {
         if (jobStatusResponse.getException().equals(""))
