@@ -26,7 +26,22 @@ public class BuildLoadtestSummary extends ViewBuildResults
     private String artifactId = "None";
     private String testHasFinished = "N/A";
     private String testHasResult = "N/A";
-    private final String NL = System.lineSeparator();
+    private final String defaultNotAvailableMessage = "Not available, check the logs for possible failures";
+    private String presetName;
+    private String scenario;
+    private String startDateUtc;
+    private String totalPassedLoops;
+    private String totalFailedLoops;
+    private String averageNetworkThroughput;
+    private String networkThroughputUnit;
+    private String averageSessionTimePerLoop;
+    private String averageResponseTimePerLoop;
+    private String webTransactionRate;
+    private String averageResponseTimePerPage;
+    private String totalHttpCalls;
+    private String averageNetworkConnectTime;
+    private String totalTransmittedBytes;
+    private String linkToDetails;
 
     @Override
     public String doExecute() throws Exception
@@ -35,6 +50,21 @@ public class BuildLoadtestSummary extends ViewBuildResults
 
         setGroupId("com.apica");
         setArtifactId("ApicaLoadtest");
+        presetName = defaultNotAvailableMessage;
+        scenario = defaultNotAvailableMessage;
+        startDateUtc = defaultNotAvailableMessage;
+        totalPassedLoops = defaultNotAvailableMessage;
+        totalFailedLoops = defaultNotAvailableMessage;
+        averageNetworkThroughput = defaultNotAvailableMessage;
+        networkThroughputUnit = defaultNotAvailableMessage;
+        averageSessionTimePerLoop = defaultNotAvailableMessage;
+        averageResponseTimePerLoop = defaultNotAvailableMessage;
+        webTransactionRate = defaultNotAvailableMessage;
+        averageResponseTimePerPage = defaultNotAvailableMessage;
+        totalHttpCalls = defaultNotAvailableMessage;
+        averageNetworkConnectTime = defaultNotAvailableMessage;
+        totalTransmittedBytes = defaultNotAvailableMessage;
+        linkToDetails = defaultNotAvailableMessage;
         ChainResultsSummaryImpl chainResults = (ChainResultsSummaryImpl) this.getResultsSummary();
 
         List<ChainStageResult> resultList = chainResults.getStageResults();
@@ -58,9 +88,69 @@ public class BuildLoadtestSummary extends ViewBuildResults
                 {
                     testHasResult = customBuildData.get("hasResults");
                 }
+                if (customBuildData.containsKey("presetName"))
+                {
+                    presetName = customBuildData.get("presetName");
+                }
+                if (customBuildData.containsKey("scenario"))
+                {
+                    scenario = customBuildData.get("scenario");
+                }
+                if (customBuildData.containsKey("startDateUtc"))
+                {
+                    startDateUtc = customBuildData.get("startDateUtc");
+                }
+                if (customBuildData.containsKey("totalPassedLoops"))
+                {
+                    totalPassedLoops = customBuildData.get("totalPassedLoops");
+                }
+                if (customBuildData.containsKey("totalFailedLoops"))
+                {
+                    totalFailedLoops = customBuildData.get("totalFailedLoops");
+                }
+                if (customBuildData.containsKey("averageNetworkThroughput"))
+                {
+                    averageNetworkThroughput = customBuildData.get("averageNetworkThroughput");
+                }
+                if (customBuildData.containsKey("networkThroughputUnit"))
+                {
+                    networkThroughputUnit = customBuildData.get("networkThroughputUnit");
+                }
+                if (customBuildData.containsKey("averageSessionTimePerLoop"))
+                {
+                    averageSessionTimePerLoop = customBuildData.get("averageSessionTimePerLoop");
+                }
+                if (customBuildData.containsKey("averageResponseTimePerLoop"))
+                {
+                    averageResponseTimePerLoop = customBuildData.get("averageResponseTimePerLoop");
+                }
+                if (customBuildData.containsKey("webTransactionRate"))
+                {
+                    webTransactionRate = customBuildData.get("webTransactionRate");
+                }
+                if (customBuildData.containsKey("averageResponseTimePerPage"))
+                {
+                    averageResponseTimePerPage = customBuildData.get("averageResponseTimePerPage");
+                }
+                if (customBuildData.containsKey("totalHttpCalls"))
+                {
+                    totalHttpCalls = customBuildData.get("totalHttpCalls");
+                }
+                if (customBuildData.containsKey("averageNetworkConnectTime"))
+                {
+                    averageNetworkConnectTime = customBuildData.get("averageNetworkConnectTime");
+                }
+                if (customBuildData.containsKey("totalTransmittedBytes"))
+                {
+                    totalTransmittedBytes = customBuildData.get("totalTransmittedBytes");
+                }
+                if (customBuildData.containsKey("linkToDetails"))
+                {
+                    linkToDetails = customBuildData.get("linkToDetails");
+                }
             }
         }
-        
+
         return INPUT;
     }
 
@@ -116,5 +206,78 @@ public class BuildLoadtestSummary extends ViewBuildResults
         return testHasResult;
     }
 
-    
+    public String getPresetName()
+    {
+        return presetName;
+    }
+
+    public String getScenario()
+    {
+        return scenario;
+    }
+
+    public String getStartDateUtc()
+    {
+        return startDateUtc;
+    }
+
+    public String getTotalPassedLoops()
+    {
+        return totalPassedLoops;
+    }
+
+    public String getTotalFailedLoops()
+    {
+        return totalFailedLoops;
+    }
+
+    public String getAverageNetworkThroughput()
+    {
+        return averageNetworkThroughput;
+    }
+
+    public String getNetworkThroughputUnit()
+    {
+        return networkThroughputUnit;
+    }
+
+    public String getAverageSessionTimePerLoop()
+    {
+        return averageSessionTimePerLoop;
+    }
+
+    public String getAverageResponseTimePerLoop()
+    {
+        return averageResponseTimePerLoop;
+    }
+
+    public String getWebTransactionRate()
+    {
+        return webTransactionRate;
+    }
+
+    public String getAverageResponseTimePerPage()
+    {
+        return averageResponseTimePerPage;
+    }
+
+    public String getTotalHttpCalls()
+    {
+        return totalHttpCalls;
+    }
+
+    public String getAverageNetworkConnectTime()
+    {
+        return averageNetworkConnectTime;
+    }
+
+    public String getTotalTransmittedBytes()
+    {
+        return totalTransmittedBytes;
+    }
+
+    public String getLinkToDetails()
+    {
+        return linkToDetails;
+    }
 }

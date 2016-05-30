@@ -12,6 +12,7 @@ package com.apica.loadtest.execution;
 public class RunLoadtestJobResult
 {
     private PerformanceSummary performanceSummary;
+    private String linkToResultDetails;
     private boolean success;
 
     public PerformanceSummary getPerformanceSummary()
@@ -19,6 +20,16 @@ public class RunLoadtestJobResult
         return performanceSummary;
     }
 
+    public String getLinkToResultDetails()
+    {
+        return linkToResultDetails;
+    }
+
+    public void setLinkToResultDetails(String linkToResultDetails)
+    {
+        this.linkToResultDetails = linkToResultDetails;
+    }
+    
     public void setPerformanceSummary(PerformanceSummary performanceSummary)
     {
         this.performanceSummary = performanceSummary;

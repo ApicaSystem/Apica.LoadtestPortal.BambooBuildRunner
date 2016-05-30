@@ -14,16 +14,22 @@
         <resource type="freemarker" name="edit" location="editLoadtestRunnerTask.ftl"/>
         <resource type="freemarker" name="view" location="viewLoadtestRunnerTask.ftl"/>  
         <resource type="download" name="icon" location="images/apicaloadtest.png"/>
-    </taskType>
-    
+    </taskType>    
     
     <!--build info-->
     <xwork key="ApicaReports" name="Loadtest results">
-        <package name="apicaLoadtestPlugin" extends="buildView">
+        <package name="apicaLoadtestSummary" extends="buildView">
             <action name="buildLoadtestSummary" class="com.apica.loadtest.reports.BuildLoadtestSummary">
                 <result name="input" type="freemarker">/reports/buildLoadtestReport.ftl</result>
                 <result name="error" type="freemarker">/reports/buildLoadtestReport.ftl</result>
                 <result name="success" type="freemarker">/reports/buildLoadtestReport.ftl</result>
+            </action>
+        </package>
+        <package name="apicaLoadtestTrend" extends="buildView">
+            <action name="buildLoadtestTrend" class="com.apica.loadtest.reports.BuildLoadtestTrend">
+                <result name="input" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
+                <result name="error" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
+                <result name="success" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
             </action>
         </package>
     </xwork>
@@ -32,6 +38,14 @@
               name="View Apica Loadtest Summary" section="chainResults.subMenu/chainResults" weight="20">
         <label key="Apica Loadtest Summary"/>
         <link linkId="buildLoadtestSummary:${buildKey}-${buildNumber}">/build/result/buildLoadtestSummary.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+        <condition class="com.apica.loadtest.reports.BuildLoadtestReportingCondition" />
+    </web-item>
+    
+    <web-item key="buildLoadtestTrend:${buildKey}-${buildNumber}"
+              name="View Apica Loadtest Trend" section="chainResults.subMenu/chainResults" weight="20">
+        <label key="Apica Loadtest Trend"/>
+        <link linkId="buildLoadtestTrend:${buildKey}-${buildNumber}">/build/result/buildLoadtestTrend.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+        <condition class="com.apica.loadtest.reports.BuildLoadtestReportingCondition" />
     </web-item>
     
     <!-- add our i18n resource -->
@@ -50,6 +64,7 @@
     
     <resource type="download" name="apica-loadtest-logo.png" location="images/apica-loadtest-logo.png"/>
     <resource type="download" name="ApicaLoadtest.css" location="css/ApicaLoadtest.css"/>
+    <resource type="download" name="ApicaLoadtest.js" location="js/ApicaLoadtest.js"/>
     
     <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
     <component-import key="taskContextHelper" interface="com.atlassian.bamboo.task.TaskContextHelperService"/>

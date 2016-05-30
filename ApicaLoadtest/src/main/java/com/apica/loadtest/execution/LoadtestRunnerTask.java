@@ -22,6 +22,7 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.util.concurrent.NotNull;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,6 +35,7 @@ public class LoadtestRunnerTask implements TaskType
 
     private final JobExecutorService jobExecutorService;
     private final JobParameterValidationService parameterValidationService;
+    private long executionStartDateMillis;
 
     public LoadtestRunnerTask()
     {
@@ -52,12 +54,14 @@ public class LoadtestRunnerTask implements TaskType
     public TaskResult execute(final TaskContext taskContext) throws TaskException
     {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
+        executionStartDateMillis = new Date().getTime();
 
         taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("baseUrl", taskContext.getConfigurationMap().get("baseUrl"));
 
         List<Threshold> thresholds = new ArrayList<Threshold>();
         //code omitted for the time being, need to collect thresholds later
         final String apiToken = taskContext.getConfigurationMap().get(StringConstants.API_TOKEN_KEY);
+        taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("apiToken", apiToken);
         final String scenarioFile = taskContext.getConfigurationMap().get(StringConstants.SCENARIO_FILE_NAME_KEY);
         final String preset = taskContext.getConfigurationMap().get(StringConstants.PRESET_KEY);
 
@@ -99,11 +103,17 @@ public class LoadtestRunnerTask implements TaskType
                 }
                 serverSideValidationOk = false;
             } else //validate test instance id
-             if (presetResponse.getTestInstanceId() < 1)
+            {
+                if (presetResponse.getTestInstanceId() < 1)
                 {
                     buildLogger.addBuildLogEntry("The preset is not linked to a valid test instance. Please check in LTP if you have selected an existing test instance for the preset.");
                     serverSideValidationOk = false;
                 }
+                else
+                {
+                    taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("presetTestInstanceId", Integer.toString(presetResponse.getTestInstanceId()));
+                }
+            }
 
             RunnableFileResponse runnableFileResponse = parameterValidationService.checkRunnableFile(apiToken, scenarioFile);
             if (!runnableFileResponse.isFileExists())
@@ -122,6 +132,8 @@ public class LoadtestRunnerTask implements TaskType
 
         if (clientSideValidationOk && serverSideValidationOk)
         {
+            taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("presetName", preset);
+            taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("scenario", scenarioFile);
             buildLogger.addBuildLogEntry("Validation done, continuing with the job initiation...");
             if (!thresholds.isEmpty())
             {
@@ -137,8 +149,19 @@ public class LoadtestRunnerTask implements TaskType
             PerformanceSummary performanceSummary = runLoadtestJob.getPerformanceSummary();
             if (performanceSummary != null)
             {
-
-                //build.addAction(new LoadTestSummary(build, performanceSummary, loadtestBuilderModel.getPresetName()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("startDateUtc", new Date(executionStartDateMillis).toString());
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("totalPassedLoops", Integer.toString(performanceSummary.getTotalPassedLoops()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("totalFailedLoops", Integer.toString(performanceSummary.getTotalFailedLoops()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("averageNetworkThroughput", Double.toString(performanceSummary.getAverageNetworkThroughput()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("networkThroughputUnit", performanceSummary.getNetworkThroughputUnit());
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("averageSessionTimePerLoop", Double.toString(performanceSummary.getAverageSessionTimePerLoop()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("averageResponseTimePerLoop", Double.toString(performanceSummary.getAverageResponseTimePerLoopMs()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("webTransactionRate", Double.toString(performanceSummary.getWebTransactionRate()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("averageResponseTimePerPage", Double.toString(performanceSummary.getAverageResponseTimePerPageMs()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("totalHttpCalls", Integer.toString(performanceSummary.getTotalHttpCalls()));                
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("averageNetworkConnectTime", Integer.toString(performanceSummary.getAverageNetworkConnectTime()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("totalTransmittedBytes", Long.toString(performanceSummary.getTotalTransmittedBytes()));
+                taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("linkToDetails", runLoadtestJob.getLinkToResultDetails());
             }
             if (res)
             {
@@ -198,6 +221,7 @@ public class LoadtestRunnerTask implements TaskType
                     summaryRequest.setApiToken(authToken);
                     LoadtestJobSummaryResponse summaryResponse = jobExecutorService.getJobSummaryResponse(summaryRequest);
                     res.setPerformanceSummary(summaryResponse.getPerformanceSummary());
+                    res.setLinkToResultDetails(summaryResponse.getLinkToTestResults());
                     logJobSummary(summaryResponse, buildLogger);
                     if (!thresholds.isEmpty())
                     {
