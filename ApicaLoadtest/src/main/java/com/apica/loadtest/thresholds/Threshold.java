@@ -60,7 +60,7 @@ public class Threshold
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("If ").append(metric.getDescription().toLowerCase()).append(" ").append(direction.getDescription())
+        sb.append("If ").append(metric.getDescription().toLowerCase()).append(" is ").append(direction.getDescription())
                 .append(" ").append(Double.toString(numericValue))
                 .append(metric.getUnitOfMeasurementSymbol())
                 .append(" then mark test as failed");

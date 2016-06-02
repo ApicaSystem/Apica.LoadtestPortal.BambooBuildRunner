@@ -35,7 +35,7 @@ public class AverageResponseTimePerPageMetric extends LoadtestThresholdMetric
 
     public AverageResponseTimePerPageMetric()
     {
-        super("resp_time_per_page", "Average response time per page (sec)", "sec");
+        super("resp_time_per_page", "Avg. response time per page (sec)", "sec");
     }
 
     @Override

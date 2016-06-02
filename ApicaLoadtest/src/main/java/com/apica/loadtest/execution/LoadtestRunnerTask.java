@@ -5,9 +5,16 @@
  */
 package com.apica.loadtest.execution;
 
+import com.amazonaws.util.json.Jackson;
 import com.apica.constants.StringConstants;
+import com.apica.loadtest.thresholds.LoadtestThresholdMetric;
+import com.apica.loadtest.thresholds.LoadtestThresholdMetricFactory;
 import com.apica.loadtest.thresholds.Threshold;
+import com.apica.loadtest.thresholds.ThresholdDirection;
+import com.apica.loadtest.thresholds.ThresholdDirectionFactory;
 import com.apica.loadtest.thresholds.ThresholdEvaluationResult;
+import com.apica.loadtest.thresholds.ThresholdViewModel;
+import com.apica.loadtest.thresholds.ThresholdViewModelListContainer;
 import com.apica.loadtest.validation.JobParameterValidationService;
 import com.apica.loadtest.validation.LoadtestJobParameterValidationService;
 import com.apica.loadtest.validation.PresetResponse;
@@ -58,12 +65,29 @@ public class LoadtestRunnerTask implements TaskType
 
         taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("baseUrl", taskContext.getConfigurationMap().get("baseUrl"));
 
-        List<Threshold> thresholds = new ArrayList<Threshold>();
+        List<Threshold> thresholds = new ArrayList<>();
         //code omitted for the time being, need to collect thresholds later
         final String apiToken = taskContext.getConfigurationMap().get(StringConstants.API_TOKEN_KEY);
         taskContext.getBuildContext().getBuildResult().getCustomBuildData().put("apiToken", apiToken);
         final String scenarioFile = taskContext.getConfigurationMap().get(StringConstants.SCENARIO_FILE_NAME_KEY);
         final String preset = taskContext.getConfigurationMap().get(StringConstants.PRESET_KEY);
+        final String thresholdsVmJson = taskContext.getConfigurationMap().get(StringConstants.THRESHOLDS_KEY);
+        String jsonThresholds = taskContext.getConfigurationMap().get(StringConstants.THRESHOLDS_KEY);
+        if (jsonThresholds != null)
+        {
+            ThresholdViewModelListContainer thresholdsContainer = Jackson.fromJsonString(jsonThresholds, ThresholdViewModelListContainer.class);
+            List<ThresholdViewModel> thresholdViewModels = thresholdsContainer.getThresholdViewModels();
+            thresholdViewModels.stream().map((thresholdViewModel) ->
+            {
+                ThresholdDirection thresholdDirection = ThresholdDirectionFactory.getThresholdDirection(thresholdViewModel.getDirection());
+                LoadtestThresholdMetric metric = LoadtestThresholdMetricFactory.getMetric(thresholdViewModel.getMetric());
+                Threshold t = new Threshold(metric, thresholdDirection, thresholdViewModel.getValue());
+                return t;
+            }).forEach((t) ->
+            {
+                thresholds.add(t);
+            });
+        }
 
         buildLogger.addBuildLogEntry("Apica Loadtest starting...");
         buildLogger.addBuildLogEntry("Validating job parameters...");
@@ -137,11 +161,11 @@ public class LoadtestRunnerTask implements TaskType
             buildLogger.addBuildLogEntry("Validation done, continuing with the job initiation...");
             if (!thresholds.isEmpty())
             {
-                buildLogger.addBuildLogEntry("Threshold values: \r\n");
-                for (Threshold threshold : thresholds)
+                buildLogger.addBuildLogEntry("Threshold values:");
+                thresholds.stream().forEach((threshold) ->
                 {
                     buildLogger.addBuildLogEntry(threshold.toString());
-                }
+                });
             }
 
             RunLoadtestJobResult runLoadtestJob = runLoadtestJob(buildLogger, thresholds, preset, scenarioFile, apiToken);
