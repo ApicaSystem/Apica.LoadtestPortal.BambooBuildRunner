@@ -34,17 +34,17 @@
         </package>
     </xwork>
 
-    <web-item key="buildLoadtestSummary:${buildKey}-${buildNumber}"
+    <web-item key="buildLoadtestSummary:${planKey}-${buildNumber}"
               name="View Apica Loadtest Summary" section="chainResults.subMenu/chainResults" weight="20">
         <label key="Apica Loadtest Summary"/>
-        <link linkId="buildLoadtestSummary:${buildKey}-${buildNumber}">/build/result/buildLoadtestSummary.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+        <link linkId="buildLoadtestSummary:${planKey}-${buildNumber}">/build/result/buildLoadtestSummary.action?planKey=${planKey}&amp;buildNumber=${buildNumber}</link>
         <condition class="com.apica.loadtest.reports.BuildLoadtestReportingCondition" />
     </web-item>
     
-    <web-item key="buildLoadtestTrend:${buildKey}-${buildNumber}"
+    <web-item key="buildLoadtestTrend:${planKey}-${buildNumber}"
               name="View Apica Loadtest Trend" section="chainResults.subMenu/chainResults" weight="20">
         <label key="Apica Loadtest Trend"/>
-        <link linkId="buildLoadtestTrend:${buildKey}-${buildNumber}">/build/result/buildLoadtestTrend.action?buildKey=${buildKey}&amp;buildNumber=${buildNumber}</link>
+        <link linkId="buildLoadtestTrend:${planKey}-${buildNumber}">/build/result/buildLoadtestTrend.action?planKey=${planKey}&amp;buildNumber=${buildNumber}</link>
         <condition class="com.apica.loadtest.reports.BuildLoadtestReportingCondition" />
     </web-item>
     

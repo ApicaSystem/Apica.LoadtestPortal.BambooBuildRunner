@@ -41,7 +41,7 @@ public class AverageResponseTimePerPageMetric extends LoadtestThresholdMetric
     @Override
     public double extractActualValueFrom(PerformanceSummary performanceSummary)
     {
-        return performanceSummary.getAverageResponseTimePerPageMs();
+        return performanceSummary.getAverageResponseTimePerPageMs() / 1000.0;
     }
     
 }
