@@ -18,14 +18,14 @@
     
     <!--build info-->
     <xwork key="ApicaReports" name="Loadtest results">
-        <package name="apicaLoadtestSummary" extends="buildView">
+        <package name="apicaLoadtestSummary" extends="buildResultView">
             <action name="buildLoadtestSummary" class="com.apica.loadtest.reports.BuildLoadtestSummary">
                 <result name="input" type="freemarker">/reports/buildLoadtestReport.ftl</result>
                 <result name="error" type="freemarker">/reports/buildLoadtestReport.ftl</result>
                 <result name="success" type="freemarker">/reports/buildLoadtestReport.ftl</result>
             </action>
         </package>
-        <package name="apicaLoadtestTrend" extends="buildView">
+        <package name="apicaLoadtestTrend" extends="buildResultView">
             <action name="buildLoadtestTrend" class="com.apica.loadtest.reports.BuildLoadtestTrend">
                 <result name="input" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
                 <result name="error" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
