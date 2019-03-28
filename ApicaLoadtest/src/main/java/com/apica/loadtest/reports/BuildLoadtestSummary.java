@@ -5,10 +5,11 @@
  */
 package com.apica.loadtest.reports;
 
-import com.atlassian.bamboo.build.ViewBuildResults;
-import com.atlassian.bamboo.chains.ChainResultsSummaryImpl;
+import com.atlassian.bamboo.build.PlanResultsAction;
+import com.atlassian.bamboo.chains.ChainResultsSummary;
 import com.atlassian.bamboo.chains.ChainStageResult;
 import com.atlassian.bamboo.resultsummary.BuildResultsSummary;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.Set;
  *
  * @author andras.nemes
  */
-public class BuildLoadtestSummary extends ViewBuildResults
+public class BuildLoadtestSummary extends PlanResultsAction
 {
 
     private String baseUrl = "None";
@@ -43,11 +44,8 @@ public class BuildLoadtestSummary extends ViewBuildResults
     private String totalTransmittedBytes;
     private String linkToDetails;
 
-    @Override
-    public String doExecute() throws Exception
+    public String doSummary()
     {
-        String superResult = super.doExecute();
-
         setGroupId("com.apica");
         setArtifactId("ApicaLoadtest");
         presetName = defaultNotAvailableMessage;
@@ -65,7 +63,8 @@ public class BuildLoadtestSummary extends ViewBuildResults
         averageNetworkConnectTime = defaultNotAvailableMessage;
         totalTransmittedBytes = defaultNotAvailableMessage;
         linkToDetails = defaultNotAvailableMessage;
-        ChainResultsSummaryImpl chainResults = (ChainResultsSummaryImpl) this.getResultsSummary();
+        //ChainResultsSummaryImpl chainResults = (ChainResultsSummaryImpl) this.getResultsSummary();
+        ChainResultsSummary chainResults = getChainResultsSummary();
 
         List<ChainStageResult> resultList = chainResults.getStageResults();
         for (ChainStageResult chainResult : resultList)
@@ -151,21 +150,20 @@ public class BuildLoadtestSummary extends ViewBuildResults
             }
         }
 
-        return INPUT;
+        return "success";
     }
-
+    
     @Override
     public String doDefault() throws Exception
     {
-        super.doExecute(); // to populate all the stuff
         if (getUser() == null)
         {
             return ERROR;
         }
         return INPUT;
-
     }
 
+    @Override
     public String getBaseUrl()
     {
         return baseUrl;
@@ -279,5 +277,16 @@ public class BuildLoadtestSummary extends ViewBuildResults
     public String getLinkToDetails()
     {
         return linkToDetails;
+    }
+
+    private ChainResultsSummary getChainResultsSummary()
+    {
+        if (resultsSummary instanceof ChainResultsSummary)
+        {
+            return (ChainResultsSummary) resultsSummary;
+        } else
+        {
+            return resultsSummaryManager.getParentResultSummary(resultsSummary);
+        }
     }
 }

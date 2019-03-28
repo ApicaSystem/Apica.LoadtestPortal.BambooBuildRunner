@@ -5,7 +5,7 @@
  */
 package com.apica.loadtest.reports;
 
-import com.atlassian.bamboo.build.ViewBuildResults;
+import com.atlassian.bamboo.build.PlanResultsAction;
 import com.atlassian.bamboo.chains.ChainResultsSummaryImpl;
 import com.atlassian.bamboo.chains.ChainStageResult;
 import com.atlassian.bamboo.resultsummary.BuildResultsSummary;
@@ -18,7 +18,7 @@ import java.util.Set;
  *
  * @author andras.nemes
  */
-public class BuildLoadtestTrend extends ViewBuildResults
+public class BuildLoadtestTrend extends PlanResultsAction
 {
     private String trendsUrl;
     private String baseUrl = "None";
@@ -27,12 +27,10 @@ public class BuildLoadtestTrend extends ViewBuildResults
     private final String webPortalRoot = "https://loadtest.apicasystem.com/";
     private final String loadtestPortalCiController = "ContinuousIntegrationTeamCity";
     
-    @Override
-    public String doExecute() throws Exception
+    public String doTrend()
     {
         groupId = "com.apica";
         artifactId = "ApicaLoadtest";
-        String superResult = super.doExecute();
         ChainResultsSummaryImpl chainResults = (ChainResultsSummaryImpl) this.getResultsSummary();
         String presetName = "N/A";
         int presetTestInstance = 0;
@@ -78,7 +76,6 @@ public class BuildLoadtestTrend extends ViewBuildResults
     @Override
     public String doDefault() throws Exception
     {
-        super.doExecute(); // to populate all the stuff
         if (getUser() == null)
         {
             return ERROR;
@@ -91,6 +88,7 @@ public class BuildLoadtestTrend extends ViewBuildResults
         return trendsUrl;
     }
 
+    @Override
     public String getBaseUrl()
     {
         return baseUrl;

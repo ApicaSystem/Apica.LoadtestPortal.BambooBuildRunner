@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -52,6 +53,7 @@ public class LoadtestRunnerConfigurator extends AbstractTaskConfigurator impleme
     private final String thresholdValuePrefix = "threshold_value_";
     private final String thresholdDirectionPrefix = "threshold_direction_";
     private final String thresholdMetricPrefix = "threshold_metric_";
+    private static final Logger log = Logger.getLogger(LoadtestRunnerConfigurator.class);
 
     public LoadtestRunnerConfigurator()
     {
@@ -64,7 +66,8 @@ public class LoadtestRunnerConfigurator extends AbstractTaskConfigurator impleme
     }
 
     @Override
-    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @Nullable final TaskDefinition previousTaskDefinition)
+    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, 
+            @Nullable final TaskDefinition previousTaskDefinition)
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
         config.put(apiTokenKey, params.getString(apiTokenKey));
@@ -75,6 +78,7 @@ public class LoadtestRunnerConfigurator extends AbstractTaskConfigurator impleme
         ThresholdViewModelListContainer thresholdsContainer = new ThresholdViewModelListContainer();
         thresholdsContainer.setFromThresholds(thresholds);
         config.put(thresholdsKey, Jackson.toJsonString(thresholdsContainer));
+        log.info("LOADTEST PLUGIN ADDED");
         return config;
     }
 

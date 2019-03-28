@@ -26,11 +26,13 @@ public class BuildLoadtestReportingCondition implements Condition
     private PlanManager planManager;
     private ResultsSummaryManager resultsSummaryManager;
 
+    @Override
     public void init(Map<String, String> map) throws PluginParseException
     {
 
     }
 
+    @Override
     public boolean shouldDisplay(Map<String, Object> context)
     {
         String planKeyDescr = context.get("planKey") == null ? null

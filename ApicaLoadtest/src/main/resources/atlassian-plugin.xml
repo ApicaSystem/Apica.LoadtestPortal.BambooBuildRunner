@@ -17,16 +17,16 @@
     </taskType>    
     
     <!--build info-->
-    <xwork key="ApicaReports" name="Loadtest results">
+    <xwork key="buildLoadtestSummary" name="Loadtest results">
         <package name="apicaLoadtestSummary" extends="buildResultView">
-            <action name="buildLoadtestSummary" class="com.apica.loadtest.reports.BuildLoadtestSummary">
+            <action name="buildLoadtestSummary" class="com.apica.loadtest.reports.BuildLoadtestSummary" method="summary">
                 <result name="input" type="freemarker">/reports/buildLoadtestReport.ftl</result>
                 <result name="error" type="freemarker">/reports/buildLoadtestReport.ftl</result>
                 <result name="success" type="freemarker">/reports/buildLoadtestReport.ftl</result>
             </action>
         </package>
         <package name="apicaLoadtestTrend" extends="buildResultView">
-            <action name="buildLoadtestTrend" class="com.apica.loadtest.reports.BuildLoadtestTrend">
+            <action name="buildLoadtestTrend" class="com.apica.loadtest.reports.BuildLoadtestTrend" method="trend">
                 <result name="input" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
                 <result name="error" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
                 <result name="success" type="freemarker">/reports/buildLoadtestTrendReport.ftl</result>
@@ -34,17 +34,17 @@
         </package>
     </xwork>
 
-    <web-item key="buildLoadtestSummary:${planKey}-${buildNumber}"
-              name="View Apica Loadtest Summary" section="chainResults.subMenu/chainResults" weight="20">
+    <web-item key="buildLoadtestSummary:\${planKey}-\${buildNumber}"
+              name="viewLoadtestSummary" section="chainResults.subMenu/chainResults" weight="20">
         <label key="Apica Loadtest Summary"/>
-        <link linkId="buildLoadtestSummary:${planKey}-${buildNumber}">/build/result/buildLoadtestSummary.action?planKey=${planKey}&amp;buildNumber=${buildNumber}</link>
+        <link linkId="buildLoadtestSummary:\${planKey}-\${buildNumber}">/build/result/buildLoadtestSummary.action?buildKey=${planKey}&amp;buildNumber=${buildNumber}</link>
         <condition class="com.apica.loadtest.reports.BuildLoadtestReportingCondition" />
     </web-item>
     
     <web-item key="buildLoadtestTrend:${planKey}-${buildNumber}"
-              name="View Apica Loadtest Trend" section="chainResults.subMenu/chainResults" weight="20">
+              name="viewLoadtestTrend" section="chainResults.subMenu/chainResults" weight="20">
         <label key="Apica Loadtest Trend"/>
-        <link linkId="buildLoadtestTrend:${planKey}-${buildNumber}">/build/result/buildLoadtestTrend.action?planKey=${planKey}&amp;buildNumber=${buildNumber}</link>
+        <link linkId="buildLoadtestTrend:${planKey}-${buildNumber}">/build/result/buildLoadtestTrend.action?buildKey=${planKey}&amp;buildNumber=${buildNumber}</link>
         <condition class="com.apica.loadtest.reports.BuildLoadtestReportingCondition" />
     </web-item>
     
@@ -69,5 +69,4 @@
     <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
     <component-import key="taskContextHelper" interface="com.atlassian.bamboo.task.TaskContextHelperService"/>
     <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
-    
 </atlassian-plugin>

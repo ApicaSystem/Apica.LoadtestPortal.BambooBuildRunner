@@ -1,6 +1,6 @@
 <html>
 <head>
-    <meta name="tab" content="View Apica Loadtest Summary"/>
+    <meta name="tab" content="viewLoadtestSummary"/>
     <meta name="decorator" content="result"/>
 </head>
 
@@ -65,7 +65,7 @@
                     </tr>
                     <tr>
                         <th style="text-align: left;padding: 0.25em;padding-right: 1em;vertical-align: top;background-color: #115822;color: #ffffff;">Link to details</th>
-                        <td style="width: 40em;text-align: left;padding: 0.25em;padding-left: .5em;vertical-align: top;background-color: #ebebeb;">${linkToDetails}</td>
+                        <td style="width: 40em;text-align: left;padding: 0.25em;padding-left: .5em;vertical-align: top;background-color: #ebebeb;"><a href="${linkToDetails}">Click here to view the results in ALT</a></td>
                     </tr>
                 </table>
         </div>
