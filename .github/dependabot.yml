@@ -1,0 +1,14 @@
+version: 2
+registries:
+  maven-jfrog:
+    type: maven-repository
+    url: https://apica.jfrog.io/artifactory/default-maven-virtual
+    username: ${{secrets.JFROG_USERNAME}}
+    password: ${{secrets.JFROG_PASSWORD}}
+updates:
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/ApicaLoadtest" # Location of package manifests
+    registries:
+      - maven-jfrog
+    schedule:
+      interval: "daily"
